@@ -31,9 +31,6 @@ j = 0
 
 for i in range(256):
 	j = (j + state[i] + ord(key[i % len(key)]) ) % 256
-
-	print str(i) + " " + str(j)
-	
 	state[i], state[j] = state[j], state[i]
 
 
