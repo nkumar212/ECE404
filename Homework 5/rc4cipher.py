@@ -24,19 +24,22 @@ key = raw_input("Enter Key: ")
 
 state = []
 
-for i in range(255):
+for i in range(256):
 	state.append(i)
 
 j = 0
 
-for i in range(255):
+for i in range(256):
 	j = (j + state[i] + ord(key[i % len(key)]) ) % 256
+
+	print str(i) + " " + str(j)
+	
 	state[i], state[j] = state[j], state[i]
 
 
-fhdout = open(fileout, 'r+b')
+fhdout = open(fileout, 'w+b')
 
-stream = BitVector( filename = fhdin )
+stream = BitVector( filename = filein )
 
 cipher_byte = BitVector( size = 0 )
 random_stream = gen_pseudorand_stream(state)
@@ -44,7 +47,7 @@ random_stream = gen_pseudorand_stream(state)
 while (stream.more_to_read):
 
 	byte = stream.read_bits_from_file(8)
-	if byte.getsize() > 0:
+	if byte.length() > 0:
 		
-		cipher_byte = byte ^ random_stream.next()
+		cipher_byte = byte ^ BitVector(intVal = random_stream.next(), size = 8)
 		cipher_byte.write_to_file( fhdout )		
