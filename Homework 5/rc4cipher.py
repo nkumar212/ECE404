@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 
 from BitVector import *
+import wave
+
+#create gen function that returns next iteration of loop evertime .next() is called
+#every iteration of loop is the pseudo random byte generated from the state vector
 
 def gen_pseudorand_stream(state):
 
@@ -17,34 +21,53 @@ def gen_pseudorand_stream(state):
 
 		yield rand_byte
 		
-
+#get key , and in/out filenames from the user
 filein = raw_input("Enter Input Filename: ")
 fileout = raw_input("Enter Output Filename: ")
 key = raw_input("Enter Key: ")
 
+#create state vector
 state = []
 
+#initially fill state vector with corresponding hash value
 for i in range(256):
 	state.append(i)
 
 j = 0
 
+#permute the state vector with the key input by the user.
 for i in range(256):
 	j = (j + state[i] + ord(key[i % len(key)]) ) % 256
 	state[i], state[j] = state[j], state[i]
 
 
-fhdout = open(fileout, 'w+b')
+#create output variables and open files for reading/writing
+fhdout = wave.open(fileout, 'w')
+output = "" 
+outframe = []
+wfile = wave.open(filein,'r')
 
-stream = BitVector( filename = filein )
+#set parameters for outputfile
+fhdout.setparams(wfile.getparams())
 
-cipher_byte = BitVector( size = 0 )
+# "seed" gen function with they permuted state array
 random_stream = gen_pseudorand_stream(state)
 
-while (stream.more_to_read):
+#read wave file frame by frame
+for i in range(wfile.getnframes()):
+	
+	wframe = wfile.readframes(1)
+	
+	#take each byte from each frame, xor it with pseudo random byte and append to output string
+	for j in range(len(wframe)):
 
-	byte = stream.read_bits_from_file(8)
-	if byte.length() > 0:
+		wbyte = ord(wframe[j])
+		output += chr(wbyte ^ random_stream.next())	
 		
-		cipher_byte = byte ^ BitVector(intVal = random_stream.next(), size = 8)
-		cipher_byte.write_to_file( fhdout )		
+
+
+#write output string to wave file.
+fhdout.writeframes( output )
+
+fhdout.close()
+wfile.close()
