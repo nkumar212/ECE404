@@ -1,5 +1,19 @@
 #! /usr/bin/env python
 
+def chinese_rem(p, q, c, d, n):
+
+	pv = BitVector(intVal = p)
+	qv = BitVector(intVal = q)
+	vp = pow(c,d,p)
+	vq = pow(c,d,q)
+
+	xp = int(qv) * int(qv.multiplicative_inverse(pv))
+	xq = int(pv) * int(pv.multiplicative_inverse(qv))
+
+	rem = ( (vp*xp) + (vq*xq) ) % 128 
+
+	return rem
+
 from BitVector import *
 
 filein = raw_input("Enter input file: ")
@@ -36,7 +50,7 @@ fhdout = open(fileout, 'wb')
 mbv_final = BitVector( size = 0 )
 
 
-
+print chinese_rem(61,53,2790,2753,3233)
 
 if mode == 1:
 	
@@ -67,14 +81,19 @@ else:
 
 	while(in_bv.more_to_read):
 		
-		temp = in_bv.read_bits_from_file( 256 )
-	
-		
-		m = pow(int(temp),int(d), int(n))
-		mbv = BitVector( intVal = m, size = 256 )
-		mbv_final = mbv[127:255]
+		temp = in_bv.read_bits_from_file( 128 )
+		if len(temp) > 0:	
+			
+			mbv = chinese_rem(int(pv), int(qv), int(temp), int(d), int(n))
 
-		mbv_final.write_to_file( fhdout )
+		
+			mbv_temp = BitVector( intVal = mbv, size = 128 )
+
+			print(mbv_temp)
+			print " "
+
+			mbv_final = mbv_temp
+			mbv_final.write_to_file( fhdout )
 
 
 
