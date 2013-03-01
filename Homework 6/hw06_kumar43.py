@@ -22,7 +22,7 @@ mode = raw_input("Encrypt (1) or Decrypt (2): ")
 
 p_temp = raw_input("Enter P: ")
 q_temp = raw_input("Enter Q: ")
-n_temp = raw_input("Enter N: ")
+n_temp = int(p_temp) * int(q_temp)
 
 pv = BitVector( intVal = int(p_temp), size = 128)
 qv = BitVector( intVal = int(q_temp), size = 128)
@@ -39,8 +39,9 @@ if mode not in [1,2]:
 ev = BitVector( intVal = 65537 )
 
 d = BitVector( size = 0 )
-
-d = ev.multiplicative_inverse(n)
+ttotient = (int(pv) - 1) * (int(qv) - 1)
+totient = BitVector( intVal = ttotient )
+d = ev.multiplicative_inverse(totient)
 
 
 in_bv = BitVector(filename = filein)
@@ -87,7 +88,7 @@ else:
 			mbv = chinese_rem(int(pv), int(qv), int(temp), int(d), int(n))
 
 		
-			mbv_temp = BitVector( intVal = mbv, size = 128 )
+			mbv_temp = BitVector( intVal = mbv )
 
 			print(mbv_temp)
 			print " "
