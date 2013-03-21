@@ -78,7 +78,7 @@ for n in range(0,bv4.length(),1024):
 	block = bv4[n:n+1024]
 	words[0:16] = [block[i:i+64] for i in range(0,1024,64)]
 	for i in range(16, 80):
-		words[i] = BitVector( intVal = ((int(words[i-16]) + int(sig0(words[i-15])) + int(words[i-7]) + int(sig1(words[i-1]))) % 64), size = 64)	
+		words[i] = BitVector( intVal = ((int(words[i-16]) + int(sig0(words[i-15])) + int(words[i-7]) + int(sig1(words[i-1]))) % (2**64)), size = 64)	
 		a,b,c,d,e,f,g,h = h0,h1,h2,h3,h4,h5,h6,h7
 	for i in range(80):
 
@@ -91,26 +91,26 @@ for n in range(0,bv4.length(),1024):
 		sigA = (a_copy >> 28) ^ (a_copy >> 34) ^ (a_copy >> 39)
 		sigE = (e_copy >> 14) ^ (e_copy >> 18) ^ (e_copy >> 41)
 
-		T1 = BitVector( intVal = ((int(h) + int(chefg) + int(sigE) + int(words[i]) + int(BitVector(hexstring = k[i]))) % 64) , size = 64)
-		T2 = BitVector( intVal = ((int(sigA) + int(majabc)) % 64), size = 64)
+		T1 = BitVector( intVal = ((int(h) + int(chefg) + int(sigE) + int(words[i]) + int(BitVector(hexstring = k[i]))) % (2**64)) , size = 64)
+		T2 = BitVector( intVal = ((int(sigA) + int(majabc)) % (2**64)), size = 64)
 
 		h = g
 		g = f
 		f = e
-		e = BitVector( intVal = ((int(d) + int(T1)) % 64), size = 64)
+		e = BitVector( intVal = ((int(d) + int(T1)) % (2**64)), size = 64)
 		d = c
 		c = b
 		b = a
-		a = BitVector( intVal = ((int(T1) + int(T2)) % 64), size = 64)	
+		a = BitVector( intVal = ((int(T1) + int(T2)) % (2**64)), size = 64)	
 
-	h0 = BitVector( intVal = (int(h0) + int(a)) % (64), size = 64 )
-	h1 = BitVector( intVal = (int(h1) + int(b)) % (64), size = 64 )
-	h2 = BitVector( intVal = (int(h2) + int(c)) % (64), size = 64 )
-	h3 = BitVector( intVal = (int(h3) + int(d)) % (64), size = 64 )
-	h4 = BitVector( intVal = (int(h4) + int(e)) % (64), size = 64 )
-	h5 = BitVector( intVal = (int(h5) + int(f)) % (64), size = 64 )
-	h6 = BitVector( intVal = (int(h6) + int(g)) % (64), size = 64 )
-	h7 = BitVector( intVal = (int(h7) + int(h)) % (64), size = 64 ) 
+	h0 = BitVector( intVal = (int(h0) + int(a)) % (2**64), size = 64 )
+	h1 = BitVector( intVal = (int(h1) + int(b)) % (2**64), size = 64 )
+	h2 = BitVector( intVal = (int(h2) + int(c)) % (2**64), size = 64 )
+	h3 = BitVector( intVal = (int(h3) + int(d)) % (2**64), size = 64 )
+	h4 = BitVector( intVal = (int(h4) + int(e)) % (2**64), size = 64 )
+	h5 = BitVector( intVal = (int(h5) + int(f)) % (2**64), size = 64 )
+	h6 = BitVector( intVal = (int(h6) + int(g)) % (2**64), size = 64 )
+	h7 = BitVector( intVal = (int(h7) + int(h)) % (2**64), size = 64 ) 
 
 message_hash = h0 + h1 + h2 + h3 + h4 + h5 + h6 + h7
 
